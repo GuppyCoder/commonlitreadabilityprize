@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "commonlit-readability"
+version = "0.1.0"
+description = "Readability prediction CLI for the CommonLit model"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "CommonLit Readability Team" }]
+dependencies = [
+  "setuptools<81",
+  "torch==2.6.0",
+  "pytorch-lightning==1.9.5",
+  "transformers>=4.52,<5",
+  "numpy>=2.1,<3",
+  "pandas>=2.2.3,<3",
+  "scikit-learn>=1.6,<2",
+  "PyYAML==6.0.2",
+  "textstat==0.7.4",
+  "tqdm==4.66.4",
+]
+
+[project.scripts]
+commonlit-predict = "predict:main"
+
+[tool.setuptools]
+py-modules = ["predict", "train", "infer", "agg_scores", "upload_data"]
+
+[tool.setuptools.packages.find]
+include = ["src*"]

@@ -131,7 +131,7 @@ def predict_csv(
     return out
 
 
-if __name__ == "__main__":
+def main():
     parser = ArgumentParser()
     parser.add_argument(
         "text",
@@ -214,3 +214,7 @@ if __name__ == "__main__":
             fold_index=args.fold_index,
         )
         print(f"Prediction: {score:.6f}")
+
+
+if __name__ == "__main__":
+    main()

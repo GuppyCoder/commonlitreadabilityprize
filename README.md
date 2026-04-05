@@ -20,6 +20,20 @@ For OOF inference, `infer.py` now supports automatic device detection via:
 python infer.py --timestamp <run_timestamp> --seed 48 --device auto
 ```
 
+## Install as a package (pip)
+You can install this repo as a local package and use the prediction CLI:
+```
+python -m pip install -e .
+commonlit-predict "hello world" --timestamp <run_timestamp> --device auto
+```
+
+For batch scoring:
+```
+commonlit-predict --csv test.csv --timestamp <run_timestamp> --output test_predictions.csv
+```
+
+Note: model checkpoints/tokenizer files are loaded from `output/<timestamp>/<model_name>/fold_*/*.ckpt`.
+
 # Training
 To train a single model using a config listed in `hyperparams.yml` run:
 ```
