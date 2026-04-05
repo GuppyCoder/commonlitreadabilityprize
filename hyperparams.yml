@@ -275,3 +275,31 @@ ctrl:
   val_check_interval: 5
   kl_loss: False
   swa: True
+
+
+apple_mps:
+  model_name: roberta-base
+  accelerator: mps
+  devices: 1
+  batch_size: 4
+  num_workers: 0
+  max_epochs: 3
+  lr: 0.00005
+  weight_decay: 1.0
+  val_check_interval: 1.0
+  kl_loss: False
+  swa: False
+
+
+apple_mps_smoke:
+  model_name: roberta-base
+  accelerator: mps
+  devices: 1
+  batch_size: 2
+  num_workers: 0
+  max_epochs: 1
+  lr: 0.00005
+  weight_decay: 1.0
+  val_check_interval: 1.0
+  kl_loss: False
+  swa: False

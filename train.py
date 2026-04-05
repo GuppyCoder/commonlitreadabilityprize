@@ -1,7 +1,6 @@
 import pytorch_lightning as pl
 import torch
 from pytorch_lightning.callbacks import StochasticWeightAveraging
-from pytorch_lightning.plugins import DDPPlugin
 
 from src.config import MODEL_CACHE, OUTPUT_PATH
 from src.datasets import CommonLitDataModule
@@ -16,6 +15,7 @@ def run_fold(fold: int, args):
     resume, run_id = resume_helper(args)
 
     monitor_list = [("rmse", "min", None)]
+    # Set up logging (TensorBoard and/or Weights & Biases) and callbacks (early stopping, model checkpointing, etc.)
     loggers, callbacks = prepare_loggers_and_callbacks(
         args.timestamp,
         args.model_name,
@@ -28,22 +28,39 @@ def run_fold(fold: int, args):
         save_weights_only=True,
     )
 
+    # Optionally add Stochastic Weight Averaging (SWA) callback for improved generalization
     if args.swa:
         swa = StochasticWeightAveraging(swa_epoch_start=0.5)
         callbacks.append(swa)
 
+    # Create the model and trainer, then fit the model using the data module
     model = CommonLitModel(**args.__dict__)
 
-    trainer = pl.Trainer().from_argparse_args(
-        args,
+    trainer_kwargs = dict(
         logger=loggers,
         callbacks=callbacks,
-        # plugins=DDPPlugin(find_unused_parameters=False),
         resume_from_checkpoint=resume,
-        # fast_dev_run=True,
-        # auto_lr_find=True,
     )
 
+    if hasattr(args, "accelerator"):
+        trainer_kwargs["accelerator"] = args.accelerator
+    if hasattr(args, "devices"):
+        trainer_kwargs["devices"] = args.devices
+
+    if "accelerator" not in trainer_kwargs:
+        if torch.backends.mps.is_available():
+            trainer_kwargs["accelerator"] = "mps"
+            trainer_kwargs["devices"] = 1
+        elif torch.cuda.is_available():
+            trainer_kwargs["accelerator"] = "gpu"
+            trainer_kwargs["devices"] = getattr(args, "gpus", 1)
+        else:
+            trainer_kwargs["accelerator"] = "cpu"
+            trainer_kwargs["devices"] = 1
+
+    trainer = pl.Trainer().from_argparse_args(args, **trainer_kwargs)
+
+    # Load data via the data module, which handles tokenization and batching
     dm = CommonLitDataModule().from_argparse_args(args)
     dm.setup("fit", fold)
 

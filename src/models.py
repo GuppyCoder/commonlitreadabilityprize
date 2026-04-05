@@ -1,8 +1,8 @@
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-import wandb
-from transformers import AutoConfig, AutoModel, AdamW, get_cosine_schedule_with_warmup
+from torch.optim import AdamW
+from transformers import AutoConfig, AutoModel, get_cosine_schedule_with_warmup
 
 from src.config import MODEL_CACHE, OUTPUT_PATH
 from src.utils import add_weight_decay, get_optimizer_params

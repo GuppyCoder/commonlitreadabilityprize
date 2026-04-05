@@ -167,7 +167,7 @@ def prepare_loggers_and_callbacks(
     """
     save_path = OUTPUT_PATH / timestamp
 
-    callbacks = [LearningRateMonitor(logging_interval="epoch")]
+    callbacks = []
 
     if "/" in encoder_name:
         encoder_name = encoder_name.replace("/", "_")
@@ -217,6 +217,9 @@ def prepare_loggers_and_callbacks(
             experiment_name=f"{timestamp}-fold{fold}",
         )
         loggers.append(neptune_logger)
+
+    if len(loggers) > 0:
+        callbacks.insert(0, LearningRateMonitor(logging_interval="epoch"))
 
     return loggers, callbacks
 

@@ -1,8 +1,22 @@
 from pathlib import Path
+import os
 
 COMP_NAME = "commonlitreadabilityprize"
 
-INPUT_PATH = Path(f"/mnt/storage_dimm2/kaggle_data/{COMP_NAME}/")
-OUTPUT_PATH = Path(f"/mnt/storage_dimm2/kaggle_output/{COMP_NAME}/")
-CONFIG_PATH = Path(f"/home/anjum/kaggle/{COMP_NAME}/hyperparams.yml")
-MODEL_CACHE = Path("/mnt/storage/model_cache/huggingface")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+INPUT_PATH = Path(
+	os.environ.get("COMMONLIT_INPUT_PATH", str(PROJECT_ROOT / "input"))
+)
+OUTPUT_PATH = Path(
+	os.environ.get("COMMONLIT_OUTPUT_PATH", str(PROJECT_ROOT / "output"))
+)
+CONFIG_PATH = Path(
+	os.environ.get("COMMONLIT_CONFIG_PATH", str(PROJECT_ROOT / "hyperparams.yml"))
+)
+MODEL_CACHE = Path(
+	os.environ.get(
+		"COMMONLIT_MODEL_CACHE", str(PROJECT_ROOT / ".cache" / "huggingface")
+	)
+)
+

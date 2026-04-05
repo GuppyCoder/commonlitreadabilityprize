@@ -33,6 +33,7 @@ import datasets
 import torch
 
 from datasets import load_dataset
+from torch.optim import AdamW
 from torch.utils.data.dataloader import DataLoader
 from tqdm.auto import tqdm
 
@@ -41,7 +42,6 @@ from accelerate import Accelerator
 from transformers import (
     CONFIG_MAPPING,
     MODEL_MAPPING,
-    AdamW,
     AutoConfig,
     AutoModelForMaskedLM,
     AutoTokenizer,

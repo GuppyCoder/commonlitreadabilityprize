@@ -6,6 +6,20 @@ The writeup can be found here: https://www.kaggle.com/c/commonlitreadabilitypriz
 # Setup
 Edit `src/config.py` to reflect the input and output locations on your machine
 
+## Apple Silicon (MPS) setup
+For native Apple Silicon (M1/M2/M3), use the modern dependency set:
+```
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -U pip setuptools wheel
+pip install -r requirements-modern.txt
+```
+Training auto-selects `mps` when available.
+For OOF inference, `infer.py` now supports automatic device detection via:
+```
+python infer.py --timestamp <run_timestamp> --seed 48 --device auto
+```
+
 # Training
 To train a single model using a config listed in `hyperparams.yml` run:
 ```

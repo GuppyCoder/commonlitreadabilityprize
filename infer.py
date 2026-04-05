@@ -1,4 +1,3 @@
-import os
 from argparse import ArgumentParser
 
 import numpy as np
@@ -14,7 +13,7 @@ from src.datasets import CommonLitDataset, create_folds
 from src.models import CommonLitModel
 
 
-def infer(model, dataset, batch_size=64, device="cuda"):
+def infer(model, dataset, batch_size=64, device="cpu"):
     model.to(device)
     model.eval()
     loader = DataLoader(dataset, batch_size=batch_size, num_workers=4)
@@ -29,7 +28,7 @@ def infer(model, dataset, batch_size=64, device="cuda"):
     return torch.cat(predictions, 0)
 
 
-def make_oofs(folder_name, seed, device="cuda"):
+def make_oofs(folder_name, seed, device="cpu"):
     mpaths = sorted(list((OUTPUT_PATH / folder_name).glob(f"*/*/*.ckpt")))
     tokenizers = [AutoTokenizer.from_pretrained(str(p.parent)) for p in mpaths]
     configs = [AutoConfig.from_pretrained(str(p.parent)) for p in mpaths]
@@ -84,14 +83,23 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--gpu",
+        "--device",
         action="store",
-        dest="gpu",
-        help="GPU index to use",
-        default="0",
+        dest="device",
+        help="Device to use: auto, mps, cuda, cpu",
+        default="auto",
         type=str,
     )
 
     args = parser.parse_args()
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
-    predictions = make_oofs(args.timestamp, args.seed, device="cuda")
+    if args.device == "auto":
+        if torch.backends.mps.is_available():
+            device = "mps"
+        elif torch.cuda.is_available():
+            device = "cuda"
+        else:
+            device = "cpu"
+    else:
+        device = args.device
+
+    predictions = make_oofs(args.timestamp, args.seed, device=device)
