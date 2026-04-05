@@ -34,6 +34,37 @@ commonlit-predict --csv test.csv --timestamp <run_timestamp> --output test_predi
 
 Note: model checkpoints/tokenizer files are loaded from `output/<timestamp>/<model_name>/fold_*/*.ckpt`.
 
+## Offline delivery bundle (no internet required on target machine)
+Build a self-contained offline bundle (package wheel, dependency wheels, and model artifacts):
+```
+source .venv/bin/activate
+./scripts/build_offline_bundle.sh <run_timestamp> [model_name]
+```
+
+Example:
+```
+./scripts/build_offline_bundle.sh 20260404-172000 roberta-base
+```
+
+This generates:
+- `offline_bundle/commonlit-offline-<timestamp>-<buildstamp>/`
+- `offline_bundle/commonlit-offline-<timestamp>-<buildstamp>.tar.gz`
+
+On the offline target machine:
+```
+tar -xzf commonlit-offline-<timestamp>-<buildstamp>.tar.gz
+cd commonlit-offline-<timestamp>-<buildstamp>
+python3 -m venv .venv
+source .venv/bin/activate
+./install_offline.sh
+```
+
+Then run:
+```
+export COMMONLIT_OUTPUT_PATH="$(pwd)/model"
+commonlit-predict "hello world" --timestamp latest --device cpu
+```
+
 # Training
 To train a single model using a config listed in `hyperparams.yml` run:
 ```
